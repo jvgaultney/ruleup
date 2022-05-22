@@ -1,24 +1,31 @@
 # Example.py 
-# 
 
-from drawBot import *             # requires drawbot to be first installed as module
+from drawBot import *
 import ruleup
 
-newDrawing()                      # required by drawbot module
+filename = "./test1.pdf"
 
-testc = ruleup.Canvas(
-    frame={ 'top' : 50, 'right': 100, 'bottom': 200, 'left': 300 }
+# Define standard page, frame, mat, design
+page = ruleup.Canvas(
+    pageheight = 4000,
+    frame = { 'visible': True, 'top' : 100, 'right': 100, 'bottom': 100, 'left': 100, 'width': 0, 'fill': [.3,.2,0,1] },
+    mat = { 'visible': True, 'top' : 150, 'right': 250, 'bottom': 350, 'left': 450, 'width': 0, 'fill': [0,.3,0,1] },
+    design = { 'top' : 100, 'right': 100, 'bottom': 100, 'left': 100 }
 )
 
-size(testc.pagewidth, testc.pageheight)
+# Draw page
+newDrawing()
 
-print(testc.frame)
+page.setup()
+page.draw_boxes()
+
+print(page.frame)
+print(page.frame['top'])
 
 endDrawing()                      # advised by drawbot docs
 
-path = "./test1.pdf"      # set the path as a variable
-saveImage(path)                   # make sure to save your image
+saveImage(filename)                   # make sure to save your image
 
-# not required, but functions as an instant preview
-import os
-os.system(f"open --background -a Preview {path}")
+# Preview
+#import os
+#os.system(f"open --background -a Preview {filename}")
