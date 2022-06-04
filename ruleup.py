@@ -6,6 +6,8 @@
 from drawBot import *
 import math
 
+### BUILTINS
+
 layouts = {
     'A4L': { 'page': { 'height' : 2100, 'width': 2970 }, 'frame': { 'top' : 200, 'right': 200, 'bottom': 200, 'left': 200 } },   # A4 portrait, 20mm frame margins
 }
@@ -14,6 +16,8 @@ colblack = [0,0,0,1]
 colgreen = [0,1,0,1]
 colblue = [0,0,1,1]
 colred = [1,0,0,1]
+
+### FUNCTIONS
 
 def draw_box(x, y, w, h, s, c): # stroke width, color
     with savedState():
@@ -33,6 +37,8 @@ def draw_line(x, y, w, h, s, c, t):   # start x, start y, length, stroke width, 
         else:
             lineDash(None)
         line((x, y), (x + w, y + h))
+
+### CLASSES
 
 class Canvas:
     def __init__(self, **kwargs):
@@ -71,13 +77,13 @@ class Canvas:
         math = self.pageheight - self.frame['bottom'] - self.frame['top'] - self.mat['bottom'] - self.mat['top']
         if self.frame['visible']:
             frame = Frame( revspecs = self.frame, framex = 0, framey = 0, framew = self.pagewidth, frameh = self.pageheight )
-            frame.draw_box_orig()
+            frame.draw()
         if self.mat['visible']:
             mat = Frame( revspecs = self.mat, framex = self.frame['left'], framey = self.frame['bottom'], framew = framewd, frameh = frameht )
-            mat.draw_box_orig()
+            mat.draw()
         if self.design['visible']:
             design = Frame( revspecs = self.design, framex = self.frame['left'] + self.mat['left'], framey = self.frame['bottom'] + self.mat['bottom'], framew = matwd, frameh = math )
-            design.draw_box_orig()
+            design.draw()
 
 class Frame:
     def __init__(self, framex, framey, framew, frameh, revspecs):
@@ -91,7 +97,7 @@ class Frame:
         for key, value in specs.items():
             self.__setattr__(key, value)
 
-    def draw_box_orig(self):
+    def draw(self):
         with savedState():
             # Draw full box
             strokeWidth(0)
@@ -103,25 +109,6 @@ class Frame:
             stroke(self.color[0], self.color[1], self.color[2], self.color[3]) 
             fill(1, 1, 1, 1)
             rect(self.framex + self.left, self.framey + self.bottom, self.framew - self.left - self.right, self.frameh - self.bottom - self.top)
-
-class Outline:
-    def __init__(self, outlinex, outliney, outlinew, outlineh, revspecs):
-        self.outlinex = outlinex
-        self.outliney = outliney
-        self.outlinew = outlinew
-        self.outlineh = outlineh
-        specs = { 'swidth': 0, 'color': [0,0,0,1], 'visible': True }
-        specs.update(revspecs)
-        for key, value in specs.items():
-            self.__setattr__(key, value)
-
-    def draw_outline(self):
-        if self.visible:
-            with savedState():
-                strokeWidth(self.swidth)
-                stroke(self.color[0], self.color[1], self.color[2], self.color[3]) 
-                fill(None)
-                rect(self.outlinex, self.outliney, self.outlinew, self.outlineh)
 
 class Tile:
     def __init__(self, **kwargs):
