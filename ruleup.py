@@ -17,6 +17,23 @@ colgreen = [0,1,0,1]
 colblue = [0,0,1,1]
 colred = [1,0,0,1]
 
+formats = {
+    'A4 P basic': {
+        'pageheight':  2970,
+        'pagewidth': 2100,
+        'frame':  { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [.3,.2,0,1] },
+        'mat':    { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [0,.3,0,1] },
+        'design': { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 1, 'color': [0,0,1,.2] }
+    },    
+    'A4 L basic' : {
+        'pageheight':  2100,
+        'pagewidth': 2970,
+        'frame':  { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [.3,.2,0,1] },
+        'mat':    { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [0,.3,0,1] },
+        'design': { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 1, 'color': [0,0,1,.2] }
+    },    
+}
+
 ### FUNCTIONS
 
 def draw_box(x, y, w, h, s, c): # stroke width, color
@@ -42,13 +59,14 @@ def draw_line(x, y, w, h, s, c, t):   # start x, start y, length, stroke width, 
 
 class Canvas:
     def __init__(self, **kwargs):
-        settings = {
-            'pageheight': 2970,
-            'pagewidth': 2100,
-        }
+        settings = formats['A4 P basic']     # set the default
+        if kwargs['format']:
+            settings.update(formats[kwargs['format']])
         settings.update(kwargs)
         for key, value in settings.items():
             self.__setattr__(key, value)
+
+        # CALCULATED VALUES
         dleftx = self.frame['left'] + self.mat['left'] + self.design['left']
         drightx = self.pagewidth - self.frame['right'] - self.mat['right'] - self.design['right']
         dtopy = self.pageheight - self.frame['top'] - self.mat['top'] - self.design['top']

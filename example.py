@@ -7,11 +7,10 @@ filename = "./test1.pdf"
 
 # Define standard page, frame, mat, design
 page = ruleup.Canvas(
-    pageheight = 4200,
-    pagewidth = 2970,
-    frame = { 'visible': True, 'top' : 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [.3,.2,0,1] },
-    mat = { 'visible': True, 'top' : 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [0,.3,0,1] },
-    design = { 'visible': True, 'top' : 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 1, 'color': [0,0,1,.2] }
+    format = 'A4 P basic',  # optional
+    frame =  { 'visible': True, 'top': 200, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [.3,.2,0,1] },
+    mat =    { 'visible': True, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [0,.3,0,1] },
+    design = { 'visible': True, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 1, 'color': [0,0,1,.2] }
 )
 
 # Define individual tiles and their contents
