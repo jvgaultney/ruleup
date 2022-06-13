@@ -1,66 +1,42 @@
 # Example.py 
 
+from quopri import decodestring
 from drawBot import *
 import ruleup
 
 filename = "./test1.pdf"
 
 # Define standard page, frame, mat, design
-page = ruleup.Canvas(
-    format = 'A4 P basic',  # optional
-    frame =  { 'visible': True, 'top': 200, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [.3,.2,0,1] },
-    mat =    { 'visible': True, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': [0,.3,0,1] },
-    design = { 'visible': True, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 1, 'color': [0,0,1,.2] }
-)
+page = ruleup.Canvas(format = 'Lit banner')
+
+# Project-specific variables
+textheight = 100
+textspacing = 50
 
 # Define individual tiles and their contents
-tile_main = ruleup.Tile(
+
+tile_eng = ruleup.Tile(
     visible = True,
-    align = page.dtopl,
-    offset = (200, -150),   # x, y in drawbot space
-    height = 2000,
-    width = 1500,
-    # origin = (1200,1000),  # relative to ?
-    outline = { 'visible': False, 'swidth': 4, 'color': [1,0,0,1] },
+    position = dict(valign='top', voffset=-100, halign='left', hoffset=0),  # positive is right and up
+    height = 2500,
+    width = 700,
+    outline = dict(visible=True, swidth=4, color=ruleup.colred),
     clip = False,
     sequences = [
         {
-            'margintop': 50,
+            'margintop': 0,
+            'count': 16,
             'lines': [
-                dict(spacing=0,   width=1, color=ruleup.colblack, type='dashed', connectwt=0, changeindent=True),
-                dict(spacing=63,   width=1, color=ruleup.colblack, type='dashed', connectwt=0, changeindent=False),
-                dict(spacing=50,   width=2, color=ruleup.colgreen, type='solid', connectwt=0, changeindent=False),
-                dict(spacing=300,  width=2, color=ruleup.colgreen, type='dashed',  connectwt=2, changeindent=False),
-                dict(spacing=125,  width=2, color=ruleup.colgreen, type='solid',  connectwt=2, changeindent=False),
-                dict(spacing=50,   width=1, color=ruleup.colblack, type='dashed', connectwt=0, changeindent=False),
-                dict(spacing=50,  width=2, color=ruleup.colblue, type='solid',  connectwt=0, changeindent=True),
-                dict(spacing=53,   width=1, color=ruleup.colblue, type='dashed', connectwt=0, changeindent=False),
-                dict(spacing=22,   width=2, color=ruleup.colblue, type='solid', connectwt=0, changeindent=False),
+                dict(spacing=0, width=1, color=ruleup.colblack, type='solid', connectwt=0, changeindent=True, changelength=True),
+                dict(spacing=textheight, width=1, color=ruleup.colblack, type='solid', connectwt=1, changeindent=False, changelength=False),
                 ],
-            'indents': [
-                (175, 550), (0, 1300),
-                ],
-            'marginbottom': 100  # space between header and sequences
+            'indents': [0, 0, 0, 200, 300],
+            'lengths': [600, 100, 150, 500, 700],
+            'gap': textspacing,
+            'marginbottom': 0  # space between header and sequences
         },
-        {
-            'margintop': 50,
-            'lines': [
-                dict(spacing=0,   width=1, color=ruleup.colblack, type='dashed', connectwt=0, changeindent=True),
-                dict(spacing=63,   width=1, color=ruleup.colblack, type='dashed', connectwt=0, changeindent=False),
-                dict(spacing=50,   width=2, color=ruleup.colgreen, type='solid', connectwt=0, changeindent=False),
-                dict(spacing=300,  width=2, color=ruleup.colgreen, type='dashed',  connectwt=2, changeindent=False),
-                dict(spacing=125,  width=2, color=ruleup.colgreen, type='solid',  connectwt=2, changeindent=False),
-                dict(spacing=50,   width=1, color=ruleup.colblack, type='dashed', connectwt=0, changeindent=False),
-                dict(spacing=50,  width=2, color=ruleup.colblue, type='solid',  connectwt=0, changeindent=True),
-                dict(spacing=53,   width=1, color=ruleup.colblue, type='dashed', connectwt=0, changeindent=False),
-                dict(spacing=22,   width=2, color=ruleup.colblue, type='solid', connectwt=0, changeindent=False),
-                ],
-            'indents': [
-                (175, 550), (0, 1300),
-                ],
-            'marginbottom': 100  # space between header and sequences
-        }
-    ]
+    ],
+    designbox = { 'left': page.dleft, 'right': page.dright, 'top': page.dtop, 'bottom': page.dbottom }  # required do not modify
 )
 
 # Draw page
@@ -69,7 +45,7 @@ newDrawing()
 page.setup()
 page.draw_frames()
 
-tile_main.draw()
+tile_eng.draw()
 
 print(page.frame['top'])
 
