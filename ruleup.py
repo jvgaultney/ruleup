@@ -195,33 +195,32 @@ class Tile:
                 draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
             hpos = self.horigin
             vpos = self.vorigin
+            lindent = 0
             length = self.width
-            indent = 0
+            rindent = 0
             for s in self.sequences:
-                indentcount = 0
-                lengthcount = 0
+                poscount = 0
                 vpos = vpos - s['margintop']
                 for c in range(s['count']):
                     for lin in s['lines']:
-                        if lin['changeindent']:
-                            indent = s['indents'][indentcount]
-                            indentcount = indentcount + 1
-                            if indentcount == len(s['indents']):
-                                indentcount = 0
-                        if lin['changelength']:
-                            length = s['lengths'][lengthcount]
-                            lengthcount = lengthcount + 1
-                            if lengthcount == len(s['lengths']):
-                                lengthcount = 0
                         vpos = vpos - lin['spacing']
-                        if self.position['halign'] == 'center':
-                            hpos = self.horigin - self.width/2
+                        if lin['changehpos']:
+                            lindent = s['lindents'][poscount]
+                            rindent = s['rindents'][poscount]
+                            length = s['lengths'][poscount]
+                            poscount = poscount + 1
+                            if poscount == len(s['lindents']):
+                                poscount = 0
+                        if self.position['halign'] == 'left':
+                            hpos = self.horigin + lindent
+                        elif self.position['halign'] == 'center':
+                            hpos = self.horigin - (length/2) + lindent - rindent
                         elif self.position['halign'] == 'right':
-                            hpos = self.horigin - self.width
-                        draw_line(hpos + indent, vpos, length, 0, lin['width'], lin['color'], lin['type'])
+                            hpos = self.horigin - length - rindent
+                        draw_line(hpos, vpos, length, 0, lin['width'], lin['color'], lin['type'])
                         if lin["connectwt"] >0:
-                            draw_line(hpos + indent, vpos, 0, lin['spacing'], lin['width'], lin['color'], 'solid')
-                            draw_line(hpos + indent + length, vpos, 0, lin['spacing'], lin['width'], lin['color'], 'solid')
+                            draw_line(hpos, vpos, 0, lin['spacing'], lin['width'], lin['color'], 'solid')
+                            draw_line(hpos + length, vpos, 0, lin['spacing'], lin['width'], lin['color'], 'solid')
                     if c < s['count'] - 1:
                         vpos = vpos - s['gap']
                 vpos = vpos - s['marginbottom']
