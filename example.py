@@ -15,7 +15,22 @@ textspacing = 40
 
 # Define individual tiles and their contents
 
-tile_eng = ruleup.Tile(
+tile_trinity = ruleup.ShapesTile(
+    visible = True,
+    position = dict(valign='middle', voffset=0, halign='center', hoffset=0),  # positive is right and up
+    height = 6250,
+    width = 1300,
+    outline = dict(visible=True, swidth=4, color=ruleup.colred),
+    clip = False,
+    shapes = [
+        dict(type='circle', diameter=1000, hoffset=-270, voffset=1000, swidth=60, color=ruleup.colgreen, fill=None),
+        dict(type='circle', diameter=1000, hoffset=-970, voffset=-386, swidth=60, color=ruleup.colgreen, fill=None),
+        dict(type='circle', diameter=1000, hoffset=530, voffset=-386, swidth=60, color=ruleup.colgreen, fill=None),
+    ],
+    designbox = { 'left': page.dleft, 'right': page.dright, 'top': page.dtop, 'bottom': page.dbottom }  # required do not modify
+)
+
+tile_eng = ruleup.SequencesTile(
     visible = True,
     position = dict(valign='top', voffset=-300, halign='left', hoffset=0),  # positive is right and up
     height = 2500,
@@ -27,8 +42,8 @@ tile_eng = ruleup.Tile(
             'margintop': 0,
             'count': 16,
             'lines': [
-                dict(spacing=0, width=1, color=ruleup.colblack, type='solid', connectwt=0, changehpos=False),
-                dict(spacing=textheight, width=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
+                dict(spacing=0, swidth=1, color=ruleup.colblack, type='solid', connectwt=0, changehpos=False),
+                dict(spacing=textheight, swidth=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
                 ],
             'lindents': [  0,   0,   0, 200, 300],
             'lengths':  [600, 100, 150, 500, 700],
@@ -40,7 +55,7 @@ tile_eng = ruleup.Tile(
     designbox = { 'left': page.dleft, 'right': page.dright, 'top': page.dtop, 'bottom': page.dbottom }  # required do not modify
 )
 
-tile_lat = ruleup.Tile(
+tile_lat = ruleup.SequencesTile(
     visible = True,
     position = dict(valign='middle', voffset=35, halign='right', hoffset=0),  # positive is right and up
     height = 2500,
@@ -52,8 +67,8 @@ tile_lat = ruleup.Tile(
             'margintop': 0,
             'count': 16,
             'lines': [
-                dict(spacing=0, width=1, color=ruleup.colblack, type='solid', connectwt=0, changehpos=False),
-                dict(spacing=textheight, width=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
+                dict(spacing=0, swidth=1, color=ruleup.colblack, type='solid', connectwt=0, changehpos=False),
+                dict(spacing=textheight, swidth=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
                 ],
             'lindents': [  0,   0,   0, 200, 300],
             'lengths':  [600, 100, 150, 500, 700],
@@ -65,7 +80,7 @@ tile_lat = ruleup.Tile(
     designbox = { 'left': page.dleft, 'right': page.dright, 'top': page.dtop, 'bottom': page.dbottom }  # required do not modify
 )
 
-tile_grk = ruleup.Tile(
+tile_grk = ruleup.SequencesTile(
     visible = True,
     position = dict(valign='bottom', voffset=370, halign='left', hoffset=0),  # positive is right and up
     height = 2500,
@@ -77,8 +92,8 @@ tile_grk = ruleup.Tile(
             'margintop': 0,
             'count': 16,
             'lines': [
-                dict(spacing=0, width=1, color=ruleup.colblack, type='solid', connectwt=0, changehpos=False),
-                dict(spacing=textheight, width=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
+                dict(spacing=0, swidth=1, color=ruleup.colblack, type='solid', connectwt=0, changehpos=False),
+                dict(spacing=textheight, swidth=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
                 ],
             'lindents': [  0,   0,   0, 200, 300],
             'lengths':  [600, 100, 150, 500, 700],
@@ -97,6 +112,7 @@ newDrawing()
 page.setup()
 page.draw_frames()
 
+tile_trinity.draw()
 tile_eng.draw()
 tile_lat.draw()
 tile_grk.draw()
