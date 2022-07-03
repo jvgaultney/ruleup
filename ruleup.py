@@ -13,6 +13,7 @@ colred = [1,0,0,1]
 colbrown = [.3,.2,0,1]
 colgreen = [0,1,0,1]
 colgreendark = [0,.3,0,1]
+colgreentrans = [0,1,0,.2]
 colblue = [0,0,1,1]
 colbluetrans = [0,0,1,.2]
 colwhite = [1,1,1,1]
@@ -52,6 +53,16 @@ def draw_box(x, y, w, h, s, c): # stroke width, color
         stroke(c[0], c[1], c[2], c[3]) 
         fill(None)
         rect(x, y, w, h)
+
+def draw_oval(cpx, cpy, vdia, hdia, s, c, f): # center point, vertical diameter, horiz diameter, stroke width, color, fill
+    with savedState():
+        strokeWidth(s)
+        stroke(c[0], c[1], c[2], c[3])
+        if f == None:
+            fill(None)
+        else:
+            fill(f[0], f[1], f[2], f[3]) 
+        oval(cpx - hdia/2, cpy - vdia/2, hdia, vdia)
 
 def draw_line(x, y, w, h, s, c, t):   # start x, start y, length, stroke width, color, type
     with savedState():
@@ -144,8 +155,8 @@ class Frame:
 class Tile:
     def __init__(self, **kwargs):
         self.settings = {
-            #'valign': 'top',
-            #'halign': 'left',
+            #'sequences': [],
+            #'shapes': [],
             }
         self.settings.update(kwargs)
         for key, value in self.settings.items():
@@ -153,13 +164,18 @@ class Tile:
         
         if self.position['valign'] == 'top':
             self.vorigin = self.designbox['top'] + self.position['voffset']
+            self.top = self.vorigin
+            self.bottom = self.vorigin - self.height
         elif self.position['valign'] == 'middle':
-            self.vorigin = self.designbox['bottom'] + (self.designbox['top'] - self.designbox['bottom'])/2 + (self.height/2) + self.position['voffset']
+            self.vorigin = self.designbox['bottom'] + (self.designbox['top'] - self.designbox['bottom'])/2 + self.position['voffset']
+            self.top = self.vorigin + (self.height/2)
+            self.bottom = self.vorigin - (self.height/2)
         elif self.position['valign'] == 'bottom':
-            self.vorigin = self.designbox['bottom'] + self.height + self.position['voffset']
+            self.vorigin = self.designbox['bottom'] + self.position['voffset']
+            self.top = self.vorigin + self.height
+            self.bottom = self.vorigin
         else:
             print("Tile alignment is not set correctly")
-        self.bottom = self.vorigin - self.height
 
         if self.position['halign'] == 'left':
             self.horigin = self.designbox['left'] + self.position['hoffset']
@@ -173,43 +189,39 @@ class Tile:
         else:
             print("Tile alignment is not set correctly")
 
-        #leftx = self.align[0] + self.offset[0]
-        #midx = leftx + (self.width/2)
-        #rightx = leftx + self.width
-        #topy = self.align[1] + self.offset[1]
-        #midy = topy - (self.height/2)
-        #bottomy = topy - self.height
-        #self.topl = (leftx, topy)
-        #self.topc = (midx, topy)
-        #self.topr = (rightx, topy)
-        #self.midl = (leftx, midy)
-        #self.midc = (midx, midy)
-        #self.midr = (rightx, midy)
-        #self.bottoml = (leftx, bottomy)
-        #self.bottomc = (midx, bottomy)
-        #self.bottomr = (rightx, bottomy)
-
+        # save design boundaries for use as clipping path but do not draw
+        self.clippath = BezierPath()
+        self.clippath.moveTo((self.left, self.bottom))
+        self.clippath.lineTo((self.left + self.width, self.bottom))
+        self.clippath.lineTo((self.left + self.width, self.bottom + self.height))
+        self.clippath.lineTo((self.left, self.bottom + self.height))
+        self.clippath.closePath()
+        #drawPath(sqpath)
+    
+class SequencesTile(Tile):
     def draw(self):
         if self.visible:
             if self.outline['visible']:
                 draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
+            if self.clip:
+                    clipPath(self.clippath)
             hpos = self.horigin
-            vpos = self.vorigin
+            vpos = self.top
             lindent = 0
             length = self.width
             rindent = 0
-            for s in self.sequences:
+            for sq in self.sequences:
                 poscount = 0
-                vpos = vpos - s['margintop']
-                for c in range(s['count']):
-                    for lin in s['lines']:
+                vpos = vpos - sq['margintop']
+                for c in range(sq['count']):
+                    for lin in sq['lines']:
                         vpos = vpos - lin['spacing']
                         if lin['changehpos']:
-                            lindent = s['lindents'][poscount]
-                            rindent = s['rindents'][poscount]
-                            length = s['lengths'][poscount]
+                            lindent = sq['lindents'][poscount]
+                            rindent = sq['rindents'][poscount]
+                            length = sq['lengths'][poscount]
                             poscount = poscount + 1
-                            if poscount == len(s['lindents']):
+                            if poscount == len(sq['lindents']):
                                 poscount = 0
                         if self.position['halign'] == 'left':
                             hpos = self.horigin + lindent
@@ -217,11 +229,27 @@ class Tile:
                             hpos = self.horigin - (length/2) + lindent - rindent
                         elif self.position['halign'] == 'right':
                             hpos = self.horigin - length - rindent
-                        draw_line(hpos, vpos, length, 0, lin['width'], lin['color'], lin['type'])
+                        draw_line(hpos, vpos, length, 0, lin['swidth'], lin['color'], lin['type'])
                         if lin["connectwt"] >0:
-                            draw_line(hpos, vpos, 0, lin['spacing'], lin['width'], lin['color'], 'solid')
-                            draw_line(hpos + length, vpos, 0, lin['spacing'], lin['width'], lin['color'], 'solid')
-                    if c < s['count'] - 1:
-                        vpos = vpos - s['gap']
-                vpos = vpos - s['marginbottom']
-    
+                            draw_line(hpos, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
+                            draw_line(hpos + length, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
+                    if c < sq['count'] - 1:
+                        vpos = vpos - sq['gap']
+                vpos = vpos - sq['marginbottom']
+
+class ShapesTile(Tile):
+    def draw(self):
+        if self.visible:
+            if self.outline['visible']:
+                draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
+            if self.clip:
+                    clipPath(self.clippath)
+            hpos = self.horigin
+            vpos = self.vorigin
+            for sh in self.shapes:
+                if sh['type'] == 'circle':
+                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'], sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
+                if sh['type'] == 'trinity':
+                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'] + sh['spacing'], sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
+                    draw_oval(hpos + sh['hoffset'] + (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
+                    draw_oval(hpos + sh['hoffset'] - (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
