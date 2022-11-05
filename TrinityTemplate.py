@@ -4,7 +4,7 @@ from quopri import decodestring
 from drawBot import *
 import ruleup
 
-filename = "./test1.pdf"
+filename = "Trinity1.pdf"
 
 # Define standard page, frame, mat, design
 page = ruleup.Canvas(format = 'Lit banner')
@@ -74,7 +74,7 @@ tile_lat = ruleup.SequencesTile(
                 dict(spacing=textheight, swidth=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
                 ],
             'lindents': [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-            'lengths':  [360, 360, 360, 410, 220, 360, 500, 410, 540, 520, 500, 480, 410, 420, 300, 450, 370],
+            'lengths':  [360, 360, 360, 410, 220, 360, 500, 390, 560, 530, 500, 480, 410, 420, 300, 450, 370],
             'rindents': [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
             'gap': textspacing,
             'marginbottom': 0  # space between header and sequences
@@ -99,7 +99,7 @@ tile_grk = ruleup.SequencesTile(
                 dict(spacing=textheight, swidth=1, color=ruleup.colblack, type='solid', connectwt=1, changehpos=False),
                 ],
             'lindents': [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-            'lengths':  [280, 280, 280, 330, 400, 380, 480, 520, 500, 540, 590, 600, 570, 500, 330, 620, 700],
+            'lengths':  [280, 280, 280, 330, 400, 380, 480, 560, 500, 540, 590, 600, 570, 530, 330, 540, 610],
             'rindents': [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
             'gap': textspacing,
             'marginbottom': 0  # space between header and sequences
@@ -143,26 +143,24 @@ tile_songs = ruleup.ShapesTile(
     outline = dict(visible=False, swidth=4, color=ruleup.colred),
     clip = False,
     shapes = [
-        dict(type='arc', startx=0, starty=6235, endx=1300, endy=5200, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=270, starty=5900, endx=1300, endy=6235, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=0, starty=5950, endx=580, endy=4600, radius=870, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=270, starty=5430, endx=1300, endy=5950, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None),
-        #dict(type='arc', startx=450, starty=5340, endx=1300, endy=5140, radius=2000, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=1300, starty=5700, endx=480, endy=5000, radius=2000, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=1300, starty=4800, endx=620, endy=4340, radius=1200, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=880, starty=3960, endx=1300, endy=5050, radius=700, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=880, starty=3390, endx=1300, endy=4400, radius=580, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=770, starty=3280, endx=320, endy=3400, radius=2200, ismajor=False, swidth=30, color=arccolor, fill=None),
-        #dict(type='arc', startx=0, starty=3250, endx=500, endy=1800, radius=2000, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=0, starty=3000, endx=850, endy=3140, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=0, starty=2700, endx=850, endy=2430, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=840, starty=2270, endx=360, endy=2130, radius=1900, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=580, starty=1270, endx=1300, endy=1700, radius=1400, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=640, starty=1000, endx=1285, endy=0, radius=1300, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=1300, starty=950, endx=800, endy=1950, radius=650, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=1300, starty=750, endx=400, endy=540, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=1300, starty=420, endx=0, endy=15, radius=2200, ismajor=False, swidth=30, color=arccolor, fill=None),
-        dict(type='arc', startx=980, starty=0, endx=1300, endy=1400, radius=960, ismajor=False, swidth=30, color=arccolor, fill=None),
+        dict(type='arc', startx=0, starty=6235, endx=1300, endy=5200, radius=1700, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I believe in God
+        dict(type='arc', startx=270, starty=5920, endx=1300, endy=6235, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Holy Holy holy
+        dict(type='arc', startx=0, starty=5950, endx=580, endy=4600, radius=870, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Glory be
+        dict(type='arc', startx=270, starty=5430, endx=1300, endy=5950, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Early in the
+        dict(type='arc', startx=1300, starty=5750, endx=530, endy=5050, radius=2000, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I arise
+        dict(type='arc', startx=1300, starty=4800, endx=620, endy=4340, radius=1200, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # The invocation
+        dict(type='arc', startx=880, starty=3860, endx=1300, endy=5050, radius=770, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I believe in Jesus
+        dict(type='arc', startx=750, starty=3280, endx=1300, endy=4450, radius=760, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # To thee
+        dict(type='arc', startx=950, starty=3600, endx=0, endy=3260, radius=1600, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Holy Holy Holy
+        dict(type='arc', startx=0, starty=2960, endx=850, endy=3140, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # God in three
+        dict(type='arc', startx=0, starty=2700, endx=850, endy=2430, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I believe in the Holy Spirit
+        dict(type='arc', startx=840, starty=2270, endx=360, endy=2080, radius=1900, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # The giver of life
+        dict(type='arc', startx=580, starty=1270, endx=1300, endy=1700, radius=1400, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Through belief
+        dict(type='arc', startx=640, starty=1000, endx=1270, endy=0, radius=1100, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # As it was
+        dict(type='arc', startx=1300, starty=900, endx=780, endy=2020, radius=720, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Through confession
+        dict(type='arc', startx=1300, starty=700, endx=450, endy=540, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # World without
+        dict(type='arc', startx=1300, starty=420, endx=0, endy=15, radius=2200, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Free us
+        dict(type='arc', startx=980, starty=0, endx=1300, endy=1400, radius=960, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Libera nos
     ],
     designbox = { 'left': page.dleft, 'right': page.dright, 'top': page.dtop, 'bottom': page.dbottom }  # required do not modify
 )

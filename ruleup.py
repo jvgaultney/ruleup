@@ -22,8 +22,8 @@ formats = {
     'A4 P basic': {
         'canvasheight':  2970,
         'canvaswidth': 2100,
-        'frame':  { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': colbrown },
-        'mat':    { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 0, 'fill': colgreendark },
+        'frame':  { 'visible': False, 'top': 0, 'right': 0, 'bottom': 0, 'left': 0, 'swidth': 0, 'fill': colbrown },
+        'mat':    { 'visible': False, 'top': 0, 'right': 0, 'bottom': 0, 'left': 0, 'swidth': 0, 'fill': colgreendark },
         'design': { 'visible': False, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 1, 'color': colbluetrans },
         'paper': { 'visible': False, 'height': 2100, 'width': 2970, 'offsetx': 0, 'offsety': 0, 'swidth': 1, 'color': colred }
     },    
@@ -47,6 +47,28 @@ formats = {
 
 ### FUNCTIONS
 
+def getarcinfo(xs, ys, xe, ye, r, ismajor):
+    # assumes clockwise order
+    # based on algorithm from
+    # https://math.stackexchange.com/questions/1781438/finding-the-center-of-a-circle-given-two-points-and-a-radius-algebraically
+    xhalf = (xs - xe) / 2
+    yhalf = (ys - ye) / 2
+    lenhalf = sqrt(xhalf ** 2 + yhalf ** 2)
+    if r < lenhalf:
+        raise ValueError("Arc error - radius must be greater than " + str(int(lenhalf)))
+    else:
+        lenperp = sqrt(r ** 2 - lenhalf ** 2)
+        if ismajor:
+            xc = (xe + xhalf) + (lenperp * yhalf) / lenhalf
+            yc = (ye + yhalf) - (lenperp * xhalf) / lenhalf
+        else:
+            xc = (xe + xhalf) - (lenperp * yhalf) / lenhalf
+            yc = (ye + yhalf) + (lenperp * xhalf) / lenhalf
+        centerpoint = xc, yc
+        angs = degrees(atan2(yc - ys, xc - xs)) + 180
+        ange = degrees(atan2(yc - ye, xc - xe)) + 180
+        return centerpoint, angs, ange
+
 def draw_box(x, y, w, h, s, c): # stroke width, color
     with savedState():
         strokeWidth(s)
@@ -54,7 +76,7 @@ def draw_box(x, y, w, h, s, c): # stroke width, color
         fill(None)
         rect(x, y, w, h)
 
-def draw_oval(cpx, cpy, vdia, hdia, s, c, f): # center point, vertical diameter, horiz diameter, stroke width, color, fill
+def draw_oval(cpx, cpy, vdia, hdia, s, c, f, dot, dotc, dotdia): # center point, vertical diameter, horiz diameter, stroke width, color, fill
     with savedState():
         strokeWidth(s)
         stroke(c[0], c[1], c[2], c[3])
@@ -63,6 +85,36 @@ def draw_oval(cpx, cpy, vdia, hdia, s, c, f): # center point, vertical diameter,
         else:
             fill(f[0], f[1], f[2], f[3]) 
         oval(cpx - hdia/2, cpy - vdia/2, hdia, vdia)
+        if dot:
+            strokeWidth(0)
+            stroke(1,1,1,1)
+            fill(dotc[0], dotc[1], dotc[2], dotc[3])
+            oval(cpx - dotdia/2, cpy - dotdia/2, dotdia, dotdia)
+
+def draw_arc(xs, ys, xe, ye, rad, ismajor, s, c, f, h): # start x, start y, end x, end y, radius, is major, stroke width, color, fill, hollow
+    with savedState():
+        strokeWidth(s)
+        stroke(c[0], c[1], c[2], c[3])
+        if f == None:
+            fill(None)
+        else:
+            fill(f[0], f[1], f[2], f[3])
+        arcpath = BezierPath()
+        try:
+            centerpt, angs, ange = getarcinfo(xs, ys, xe, ye, rad, ismajor)
+        except ValueError as e:
+            print(str(e))
+        else:
+            if h:
+                strokeWidth(2)
+                arcpath.arc(centerpt, rad + s/2, angs, ange, True)
+                drawPath(arcpath)
+                arcpathaddl = BezierPath()                
+                arcpathaddl.arc(centerpt, rad - s/2, angs, ange, True)
+                drawPath(arcpathaddl)
+            else:
+                arcpath.arc(centerpt, rad, angs, ange, True)
+                drawPath(arcpath)
 
 def draw_line(x, y, w, h, s, c, t):   # start x, start y, length, stroke width, color, type
     with savedState():
@@ -248,8 +300,10 @@ class ShapesTile(Tile):
             vpos = self.vorigin
             for sh in self.shapes:
                 if sh['type'] == 'circle':
-                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'], sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
+                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'], sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
                 if sh['type'] == 'trinity':
-                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'] + sh['spacing'], sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
-                    draw_oval(hpos + sh['hoffset'] + (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
-                    draw_oval(hpos + sh['hoffset'] - (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'])
+                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'] + sh['spacing'], sh['diameter'], sh['diameter'], sh['swidth'], sh['colora'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+                    draw_oval(hpos + sh['hoffset'] + (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['colorb'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+                    draw_oval(hpos + sh['hoffset'] - (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['colorc'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+                if sh['type'] == 'arc':
+                    draw_arc(hpos + sh['startx'], vpos + sh['starty'], hpos + sh['endx'], vpos + sh['endy'], sh['radius'], sh['ismajor'], sh['swidth'], sh['color'], sh['fill'], sh['hollow'])
