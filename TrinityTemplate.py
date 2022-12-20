@@ -143,24 +143,24 @@ tile_songs = ruleup.ShapesTile(
     outline = dict(visible=False, swidth=4, color=ruleup.colred),
     clip = False,
     shapes = [
-        dict(type='arc', startx=0, starty=6235, endx=1300, endy=5200, radius=1700, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I believe in God
-        dict(type='arc', startx=270, starty=5920, endx=1300, endy=6235, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Holy Holy holy
-        dict(type='arc', startx=0, starty=5950, endx=580, endy=4600, radius=870, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Glory be
-        dict(type='arc', startx=270, starty=5430, endx=1300, endy=5950, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Early in the
-        dict(type='arc', startx=1300, starty=5750, endx=530, endy=5050, radius=2000, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I arise
-        dict(type='arc', startx=1300, starty=4800, endx=620, endy=4340, radius=1200, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # The invocation
-        dict(type='arc', startx=880, starty=3860, endx=1300, endy=5050, radius=770, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I believe in Jesus
-        dict(type='arc', startx=750, starty=3280, endx=1300, endy=4450, radius=760, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # To thee
-        dict(type='arc', startx=950, starty=3600, endx=0, endy=3260, radius=1600, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Holy Holy Holy
-        dict(type='arc', startx=0, starty=2960, endx=850, endy=3140, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # God in three
-        dict(type='arc', startx=0, starty=2700, endx=850, endy=2430, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # I believe in the Holy Spirit
-        dict(type='arc', startx=840, starty=2270, endx=360, endy=2080, radius=1900, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # The giver of life
-        dict(type='arc', startx=580, starty=1270, endx=1300, endy=1700, radius=1400, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Through belief
-        dict(type='arc', startx=640, starty=1000, endx=1270, endy=0, radius=1100, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # As it was
-        dict(type='arc', startx=1300, starty=900, endx=780, endy=2020, radius=720, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Through confession
-        dict(type='arc', startx=1300, starty=700, endx=450, endy=540, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # World without
-        dict(type='arc', startx=1300, starty=420, endx=0, endy=15, radius=2200, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Free us
-        dict(type='arc', startx=980, starty=0, endx=1300, endy=1400, radius=960, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True), # Libera nos
+        dict(type='arc', startx=0, starty=6235, endx=1300, endy=5200, radius=1700, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # I believe in God
+        dict(type='arc', startx=270, starty=5920, endx=1300, endy=6235, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Holy Holy holy
+        dict(type='arc', startx=0, starty=5950, endx=580, endy=4600, radius=870, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Glory be
+        dict(type='arc', startx=270, starty=5430, endx=1300, endy=5950, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Early in the
+        dict(type='arc', startx=1300, starty=5750, endx=530, endy=5050, radius=2000, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # I arise
+        dict(type='arc', startx=1300, starty=4800, endx=620, endy=4340, radius=1200, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # The invocation
+        dict(type='arc', startx=880, starty=3860, endx=1300, endy=5050, radius=770, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # I believe in Jesus
+        dict(type='arc', startx=750, starty=3280, endx=1300, endy=4450, radius=760, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # To thee
+        dict(type='arc', startx=950, starty=3600, endx=0, endy=3260, radius=1600, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Holy Holy Holy
+        dict(type='arc', startx=0, starty=2960, endx=850, endy=3140, radius=2500, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # God in three
+        dict(type='arc', startx=0, starty=2700, endx=850, endy=2430, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # I believe in the Holy Spirit
+        dict(type='arc', startx=840, starty=2270, endx=360, endy=2080, radius=1900, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # The giver of life
+        dict(type='arc', startx=580, starty=1270, endx=1300, endy=1700, radius=1400, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Through belief
+        dict(type='arc', startx=640, starty=1000, endx=1270, endy=0, radius=1100, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # As it was
+        dict(type='arc', startx=1300, starty=900, endx=780, endy=2020, radius=720, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Through confession
+        dict(type='arc', startx=1300, starty=700, endx=450, endy=540, radius=1800, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # World without
+        dict(type='arc', startx=1300, starty=420, endx=0, endy=15, radius=2200, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Free us
+        dict(type='arc', startx=980, starty=0, endx=1300, endy=1400, radius=960, ismajor=False, swidth=30, color=arccolor, fill=None, hollow=True, showdot=True, dotfill=ruleup.colred, dotdia=20), # Libera nos
     ],
     designbox = { 'left': page.dleft, 'right': page.dright, 'top': page.dtop, 'bottom': page.dbottom }  # required do not modify
 )

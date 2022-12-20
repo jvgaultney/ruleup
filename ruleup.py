@@ -1,10 +1,11 @@
 # RuleUp module
 # 2022.05.21 Initial version - VG
 # Scale is 10 pixels per mm
+# Print PDFs at 28.3% for accurate sizing
 # requires drawbot to be installed as module
 
 from drawBot import *
-import math
+from datetime import datetime
 
 ### BUILTINS
 
@@ -42,6 +43,14 @@ formats = {
         'mat':    { 'visible': True, 'top': 170, 'right': 170, 'bottom': 170, 'left': 170, 'swidth': 0, 'fill': colgreendark },
         'design': { 'visible': True, 'top': 480, 'right': 430, 'bottom': 530, 'left': 430, 'swidth': 1, 'color': colbluetrans },
         'paper': { 'visible': True, 'height': 7400, 'width': 2400, 'offsetx': 0, 'offsety': -310, 'swidth': 1, 'color': colred }
+    },    
+    'Esther' : {
+        'canvasheight': 4300,
+        'canvaswidth': 2500,
+        'frame':  { 'visible': True, 'top': 200, 'right': 200, 'bottom': 200, 'left': 200, 'swidth': 0, 'fill': colbrown },
+        'mat':    { 'visible': True, 'top': 200, 'right': 200, 'bottom': 200, 'left': 200, 'swidth': 0, 'fill': colgreendark },
+        'design': { 'visible': True, 'top': 420, 'right': 400, 'bottom': 420, 'left': 400, 'swidth': 1, 'color': colbluetrans },
+        'paper': { 'visible': True, 'height': 3900, 'width': 2100, 'offsetx': 0, 'offsety': -200, 'swidth': 1, 'color': colred }
     },    
 }
 
@@ -91,7 +100,7 @@ def draw_oval(cpx, cpy, vdia, hdia, s, c, f, dot, dotc, dotdia): # center point,
             fill(dotc[0], dotc[1], dotc[2], dotc[3])
             oval(cpx - dotdia/2, cpy - dotdia/2, dotdia, dotdia)
 
-def draw_arc(xs, ys, xe, ye, rad, ismajor, s, c, f, h): # start x, start y, end x, end y, radius, is major, stroke width, color, fill, hollow
+def draw_arc(xs, ys, xe, ye, rad, ismajor, s, c, f, h, dot, dotc, dotdia): # start x, start y, end x, end y, radius, is major, stroke width, color, fill, hollow
     with savedState():
         strokeWidth(s)
         stroke(c[0], c[1], c[2], c[3])
@@ -115,6 +124,12 @@ def draw_arc(xs, ys, xe, ye, rad, ismajor, s, c, f, h): # start x, start y, end 
             else:
                 arcpath.arc(centerpt, rad, angs, ange, True)
                 drawPath(arcpath)
+        if dot:
+            strokeWidth(0)
+            stroke(1,1,1,1)
+            fill(dotc[0], dotc[1], dotc[2], dotc[3])
+            oval(centerpt[0] - dotdia/2, centerpt[1] - dotdia/2, dotdia, dotdia)
+
 
 def draw_line(x, y, w, h, s, c, t):   # start x, start y, length, stroke width, color, type
     with savedState():
@@ -127,6 +142,19 @@ def draw_line(x, y, w, h, s, c, t):   # start x, start y, length, stroke width, 
         else:
             lineDash(None)
         line((x, y), (x + w, y + h))
+
+def draw_text(x, y, w, h, c, fn, fs, lh, t, a): #
+    with savedState():
+        font(fn)
+        fontSize(fs)
+        lineHeight(lh)
+        strokeWidth(0)
+        if c == None:
+            fill(0)
+        else:
+            fill(c[0], c[1], c[2], c[3]) 
+        textBox(t, (x, y, w, h), align=a)
+
 
 ### CLASSES
 
@@ -144,6 +172,13 @@ class Canvas:
         self.dright = self.canvaswidth - self.frame['right'] - self.mat['right'] - self.design['right']
         self.dtop = self.canvasheight - self.frame['top'] - self.mat['top'] - self.design['top']
         self.dbottom = self.frame['bottom'] + self.mat['bottom'] + self.design['bottom']
+
+        self.dwidth = self.dright - self.dleft
+        self.dheight = self.dtop - self.dbottom
+
+        now = datetime.now()
+        self.datetime = now.strftime("%-d %b %Y, %H:%M:%S")
+
         #self.center = self.left + (self.right - self.left) / 2
         #self.middle = self.bottom + (self.top - self.bottom) / 2
 
@@ -158,7 +193,6 @@ class Canvas:
         #self.dbottoml = (self.left, self.bottom)
         #self.dbottomc = (self.center, self.bottom)
         #self.dbottomr = (self.right, self.bottom)
-
 
     def setup(self):
         size(self.canvaswidth, self.canvasheight)
@@ -253,57 +287,75 @@ class Tile:
 class SequencesTile(Tile):
     def draw(self):
         if self.visible:
-            if self.outline['visible']:
-                draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
-            if self.clip:
+            with savedState():
+                if self.outline['visible']:
+                    draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
+                if self.clip:
                     clipPath(self.clippath)
-            hpos = self.horigin
-            vpos = self.top
-            lindent = 0
-            length = self.width
-            rindent = 0
-            for sq in self.sequences:
-                poscount = 0
-                vpos = vpos - sq['margintop']
-                for c in range(sq['count']):
-                    for lin in sq['lines']:
-                        vpos = vpos - lin['spacing']
-                        if lin['changehpos']:
-                            lindent = sq['lindents'][poscount]
-                            rindent = sq['rindents'][poscount]
-                            length = sq['lengths'][poscount]
-                            poscount = poscount + 1
-                            if poscount == len(sq['lindents']):
-                                poscount = 0
-                        if self.position['halign'] == 'left':
-                            hpos = self.horigin + lindent
-                        elif self.position['halign'] == 'center':
-                            hpos = self.horigin - (length/2) + lindent - rindent
-                        elif self.position['halign'] == 'right':
-                            hpos = self.horigin - length - rindent
-                        draw_line(hpos, vpos, length, 0, lin['swidth'], lin['color'], lin['type'])
-                        if lin["connectwt"] >0:
-                            draw_line(hpos, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
-                            draw_line(hpos + length, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
-                    if c < sq['count'] - 1:
-                        vpos = vpos - sq['gap']
-                vpos = vpos - sq['marginbottom']
+                hpos = self.horigin
+                vpos = self.top
+                lindent = 0
+                length = self.width
+                rindent = 0
+                for sq in self.sequences:
+                    poscount = 0
+                    vpos = vpos - sq['margintop']
+                    for c in range(sq['count']):
+                        for lin in sq['lines']:
+                            vpos = vpos - lin['spacing']
+                            if lin['changehpos']:
+                                lindent = sq['lindents'][poscount]
+                                rindent = sq['rindents'][poscount]
+                                length = sq['lengths'][poscount]
+                                poscount = poscount + 1
+                                if poscount == len(sq['lindents']):
+                                    poscount = 0
+                            if self.position['halign'] == 'left':
+                                hpos = self.horigin + lindent
+                            elif self.position['halign'] == 'center':
+                                hpos = self.horigin - (length/2) + lindent - rindent
+                            elif self.position['halign'] == 'right':
+                                hpos = self.horigin - length - rindent
+                            draw_line(hpos, vpos, length, 0, lin['swidth'], lin['color'], lin['type'])
+                            if lin["connectwt"] >0:
+                                draw_line(hpos, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
+                                draw_line(hpos + length, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
+                        if c < sq['count'] - 1:
+                            vpos = vpos - sq['gap']
+                    vpos = vpos - sq['marginbottom']
 
 class ShapesTile(Tile):
     def draw(self):
         if self.visible:
-            if self.outline['visible']:
-                draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
-            if self.clip:
+            with savedState():
+                if self.outline['visible']:
+                    draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
+                if self.clip:
                     clipPath(self.clippath)
-            hpos = self.horigin
-            vpos = self.vorigin
-            for sh in self.shapes:
-                if sh['type'] == 'circle':
-                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'], sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
-                if sh['type'] == 'trinity':
-                    draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'] + sh['spacing'], sh['diameter'], sh['diameter'], sh['swidth'], sh['colora'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
-                    draw_oval(hpos + sh['hoffset'] + (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['colorb'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
-                    draw_oval(hpos + sh['hoffset'] - (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['colorc'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
-                if sh['type'] == 'arc':
-                    draw_arc(hpos + sh['startx'], vpos + sh['starty'], hpos + sh['endx'], vpos + sh['endy'], sh['radius'], sh['ismajor'], sh['swidth'], sh['color'], sh['fill'], sh['hollow'])
+                hpos = self.horigin
+                vpos = self.vorigin
+                for sh in self.shapes:
+                    if sh['type'] == 'circle':
+                        draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'], sh['diameter'], sh['diameter'], sh['swidth'], sh['color'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+                    if sh['type'] == 'trinity':
+                        draw_oval(hpos + sh['hoffset'], vpos + sh['voffset'] + sh['spacing'], sh['diameter'], sh['diameter'], sh['swidth'], sh['colora'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+                        draw_oval(hpos + sh['hoffset'] + (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['colorb'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+                        draw_oval(hpos + sh['hoffset'] - (sh['spacing'] * 0.866), vpos + sh['voffset'] - (sh['spacing'] * 0.5), sh['diameter'], sh['diameter'], sh['swidth'], sh['colorc'], sh['fill'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+                    if sh['type'] == 'arc':
+                        draw_arc(hpos + sh['startx'], vpos + sh['starty'], hpos + sh['endx'], vpos + sh['endy'], sh['radius'], sh['ismajor'], sh['swidth'], sh['color'], sh['fill'], sh['hollow'], sh['showdot'], sh['dotfill'], sh['dotdia'])
+
+class TextTile(Tile):
+    def draw(self):
+        if self.visible:
+            with savedState():
+                if self.outline['visible']:
+                    draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
+                #if self.clip:
+                #    clipPath(self.clippath)
+                hpos = self.horigin
+                vpos = self.vorigin - self.height
+                txp = self.textprop
+                for txt in self.texts:
+                    draw_text(hpos, vpos, self.width, self.height, txp['color'], txp['fontname'], txp['fontsize'], txp['lineheight'], txt, txp['align'])
+                    vpos = vpos - txp['lineheight']
+
