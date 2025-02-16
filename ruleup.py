@@ -6,16 +6,24 @@
 
 from drawBot import *
 from datetime import datetime
+import math
 
 ### BUILTINS
 
 colblack = [0,0,0,1]
+colgray = [0,0,0,.5]
+colgrayverylight = [0,0,0,.1]
+colgraylight = [0,0,0,.2]
+colgraydark = [0,0,0,.8]
 colred = [1,0,0,1]
+colreddark = [.3,0,0,1]
 colbrown = [.3,.2,0,1]
+colbrownlight = [.6,.5,0,1]
 colgreen = [0,1,0,1]
 colgreendark = [0,.3,0,1]
 colgreentrans = [0,1,0,.2]
 colblue = [0,0,1,1]
+colbluelight = [0,0,1,.5]
 colbluetrans = [0,0,1,.2]
 colwhite = [1,1,1,1]
 
@@ -48,9 +56,17 @@ formats = {
         'canvasheight': 4300,
         'canvaswidth': 2500,
         'frame':  { 'visible': True, 'top': 200, 'right': 200, 'bottom': 200, 'left': 200, 'swidth': 0, 'fill': colbrown },
-        'mat':    { 'visible': True, 'top': 200, 'right': 200, 'bottom': 200, 'left': 200, 'swidth': 0, 'fill': colgreendark },
-        'design': { 'visible': True, 'top': 420, 'right': 400, 'bottom': 420, 'left': 400, 'swidth': 1, 'color': colbluetrans },
+        'mat':    { 'visible': True, 'top': 250, 'right': 250, 'bottom': 250, 'left': 250, 'swidth': 0, 'fill': colgreendark },
+        'design': { 'visible': True, 'top': 370, 'right': 350, 'bottom': 370, 'left': 350, 'swidth': 1, 'color': colbluetrans },
         'paper': { 'visible': True, 'height': 3900, 'width': 2100, 'offsetx': 0, 'offsety': -200, 'swidth': 1, 'color': colred }
+    },    
+    'Wall' : {  # dimensions shrunk 1:10 for ease
+        'canvasheight': 1200,  # include wrap around each 2 cm pole plus radius = 2 x 65 + 2 x 10
+        'canvaswidth': 1800,
+        'frame':  { 'visible': False, 'top': 55, 'right': 0, 'bottom': 55, 'left': 0, 'swidth': 0, 'fill': colreddark },
+        'mat':    { 'visible': False, 'top': 20, 'right': 0, 'bottom': 20, 'left': 0, 'swidth': 0, 'fill': colbrownlight },
+        'design': { 'visible': True, 'top': 100, 'right': 100, 'bottom': 100, 'left': 100, 'swidth': 1, 'color': colbluetrans },
+        'paper': { 'visible': True, 'height': 1050, 'width': 1800, 'offsetx': 0, 'offsety': -75, 'swidth': 1, 'color': colred }
     },    
 }
 
@@ -131,7 +147,7 @@ def draw_arc(xs, ys, xe, ye, rad, ismajor, s, c, f, h, dot, dotc, dotdia): # sta
             oval(centerpt[0] - dotdia/2, centerpt[1] - dotdia/2, dotdia, dotdia)
 
 
-def draw_line(x, y, w, h, s, c, t):   # start x, start y, length, stroke width, color, type
+def draw_line(x, y, w, h, s, c, t):   # start x, start y, width, height, color, type
     with savedState():
         fill(None)
         stroke(c[0], c[1], c[2], c[3]) 
@@ -155,6 +171,9 @@ def draw_text(x, y, w, h, c, fn, fs, lh, t, a): #
             fill(c[0], c[1], c[2], c[3]) 
         textBox(t, (x, y, w, h), align=a)
 
+def draw_image(x, y, p, a): #
+    with savedState():
+        image(p, (x, y), alpha=a)
 
 ### CLASSES
 
@@ -318,8 +337,8 @@ class SequencesTile(Tile):
                                 hpos = self.horigin - length - rindent
                             draw_line(hpos, vpos, length, 0, lin['swidth'], lin['color'], lin['type'])
                             if lin["connectwt"] >0:
-                                draw_line(hpos, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
-                                draw_line(hpos + length, vpos, 0, lin['spacing'], lin['swidth'], lin['color'], 'solid')
+                                draw_line(hpos, vpos, 0, lin['spacing'], lin["connectwt"], lin['color'], 'solid')
+                                draw_line(hpos + length, vpos, 0, lin['spacing'], lin["connectwt"], lin['color'], 'solid')
                         if c < sq['count'] - 1:
                             vpos = vpos - sq['gap']
                     vpos = vpos - sq['marginbottom']
@@ -358,4 +377,47 @@ class TextTile(Tile):
                 for txt in self.texts:
                     draw_text(hpos, vpos, self.width, self.height, txp['color'], txp['fontname'], txp['fontsize'], txp['lineheight'], txt, txp['align'])
                     vpos = vpos - txp['lineheight']
+
+class ImageTile(Tile):
+    def draw(self):
+        if self.visible:
+            with savedState():
+                if self.outline['visible']:
+                    draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
+                if self.clip:
+                    clipPath(self.clippath)
+                hpos = self.horigin
+                vpos = self.vorigin
+                for img in self.images:
+                    draw_image(hpos + img['hoffset'], vpos + img['voffset'], img['path'], img['alpha'])
+
+class GridTile(Tile):  # angle specified clockwise from vertical, can be negative to tilt to left
+    def draw(self):
+        if self.visible:
+            with savedState():
+                if self.outline['visible']:
+                    draw_box(self.left, self.bottom, self.width, self.height, self.outline['swidth'], self.outline['color'])
+                if self.clip:
+                    clipPath(self.clippath)
+                hpos = self.left
+                vpos = self.bottom
+                hposdiff = self.horigin - self.left
+                vposdiff = self.vorigin - self.bottom
+                print(hpos, vpos)
+                #length = math.sqrt( self.width * self.width + self.height * self.height )
+                #print(length)
+                for hl in self.hlines:
+                    hlcount = int(self.height / hl['spacing']) + 1
+                    for c in range(hlcount):
+                        draw_line(hpos, vpos + hl['offset'] + (c * hl['spacing']), self.width, 0, hl['swidth'], hl['color'], hl['type'],)
+                for vl in self.vlines:
+                    hang = self.height * math.tan(math.radians(vl['angle']))
+                    hposhangadj = vl['spacing'] * int(abs(hang) / vl['spacing'])
+                    #print(hang)
+                    hposhalignadj = hposdiff - (vl['spacing'] * int(hposdiff / vl['spacing']))
+                    hposvalignadj = hang * (vposdiff / self.height)
+                    hstart = hpos - hposhangadj + hposhalignadj - hposvalignadj + vl['offset']
+                    vlcount = int((self.width + abs(hang) * 2) / vl['spacing']) + 2
+                    for c in range(vlcount):
+                        draw_line(hstart + (c * vl['spacing']), vpos, hang, self.height, vl['swidth'], vl['color'], vl['type'],)
 
